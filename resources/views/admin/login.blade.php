@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>Sign In | Scrolling Banner Generator App</title>
+    <title>Bikroy Self Service</title>
     <!-- Favicon-->
     <link rel="icon" href="{!! generate_asset_url('public/favicon.ico') !!}" type="image/x-icon">
 
@@ -28,8 +28,7 @@
 <body class="login-page">
     <div class="login-box">
         <div class="logo">
-            <a href="javascript:void(0);">Scrolling Banner Generator</a>
-            <small>Manage all of your ad-content</small>
+            <a href="javascript:void(0);">Employee Self Service</a>
         </div>
         <div class="card">
             <div class="body">

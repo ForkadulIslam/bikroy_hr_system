@@ -29,8 +29,8 @@ class Admin extends Controller{
         $this->middleware('RedirectIfNotAuthenticate');
     }
     public function index(){
-        //return Auth::user();
-        return redirect('module/banner');
+        //return \auth()->user();
+        return view('admin.dashboard');
     }
 
 

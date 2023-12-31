@@ -11,10 +11,12 @@
 |
 */
 
-
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\JobsController;
+use App\Http\Controllers\EmployeeController;
+use App\Http\Controllers\HolidayCalendarController;
+use App\Http\Controllers\LeaveController;
+
 
 Route::get('/', [AuthController::class, 'index']);
 Route::get('admin', [Admin::class, 'index']);
@@ -23,10 +25,19 @@ Route::get('/logout',[AuthController::class, 'logout']);
 
 
 Route::group(['prefix'=>'module'],function(){
-    Route::resource('banner', JobsController::class);
-    Route::get('scrap_data_for_deals_ad',[JobsController::class, 'scrap_data']);
-    Route::get('deals_preview',[JobsController::class,'deals_preview']);
-    Route::get('delete_banner_content/{id}',[JobsController::class, 'delete_banner_content']);
-    Route::get('clean_broken_ad',[JobsController::class, 'clean_broken_ad']);
+    Route::resource('employee', EmployeeController::class);
+    Route::post('/check-email-availability', [EmployeeController::class, 'checkEmailAvailability'])->name('check.email.availability');
+    Route::get('manage_team_leader',[EmployeeController::class, 'manage_team_leader']);
+    Route::get('create_team_leader',[EmployeeController::class, 'create_team_leader']);
+    Route::get('team_leader_name_suggestion',[EmployeeController::class,'team_leader_name_suggestion']);
+    Route::post('save_team_leader',[EmployeeController::class, 'save_team_leader']);
+    Route::get('delete_team_leader/{id}',[EmployeeController::class, 'delete_team_leader']);
+    Route::get('leave/get_leave_count',[LeaveController::class, 'get_leave_count']);
+    Route::resource('leave',LeaveController::class);
+    Route::resource('holiday', HolidayCalendarController::class);
+    Route::get('delete_holiday/{id}',[HolidayCalendarController::class,'destroy']);
 });
-Route::get('create_html_file/{id}',[JobsController::class,'create_html_file']);
+
+
+
+

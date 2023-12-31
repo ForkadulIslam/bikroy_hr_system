@@ -20,29 +20,37 @@
         <div class="menu">
             <ul class="list">
                 <li class="header">MAIN NAVIGATION</li>
+                <li class="active">
+                    <a href="{!! url('/') !!}">
+                        <i class="material-icons">home</i>
+                        <span>Home</span>
+                    </a>
+                </li>
                 @foreach(menu_array() as $i=>$item)
 
-                    @if(isset($item['sub']))
-                        <li class="">
-                            <a href="javascript:void(0);" class="menu-toggle">
-                                <i class="material-icons">{!! $item['icon'] !!}</i>
-                                <span>{!! $item['label'] !!}</span>
-                            </a>
-                            <ul class="ml-menu">
-                                @foreach($item['sub'] as $sub_item)
-                                    <li class="">
-                                        <a href="{!! $sub_item['link'] !!}">{!! $sub_item['label'] !!}</a>
-                                    </li>
-                                @endforeach
-                            </ul>
-                        </li>
+                    @if($item['role_id'] == Auth::user()->role_id)
+                        @if(isset($item['sub']))
+                            <li class="">
+                                <a href="javascript:void(0);" class="menu-toggle">
+                                    <i class="material-icons">{!! $item['icon'] !!}</i>
+                                    <span>{!! $item['label'] !!}</span>
+                                </a>
+                                <ul class="ml-menu">
+                                    @foreach($item['sub'] as $sub_item)
+                                        <li class="">
+                                            <a href="{!! $sub_item['link'] !!}">{!! $sub_item['label'] !!}</a>
+                                        </li>
+                                    @endforeach
+                                </ul>
+                            </li>
                         @else
-                        <li class="<?= ($i==0) ? 'active': '' ?>">
-                            <a href="{!! $item['link'] !!}">
-                                <i class="material-icons">{!! $item['icon'] !!}</i>
-                                <span>{!! $item['label'] !!}</span>
-                            </a>
-                        </li>
+                            <li class="">
+                                <a href="{!! $item['link'] !!}">
+                                    <i class="material-icons">{!! $item['icon'] !!}</i>
+                                    <span>{!! $item['label'] !!}</span>
+                                </a>
+                            </li>
+                        @endif
                     @endif
                 @endforeach
 

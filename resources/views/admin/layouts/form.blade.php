@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-    <title>Scrolling Banner Generator</title>
+    <title>Bikroy Self Service</title>
 
     <!-- Favicon-->
     <link rel="icon" href="{!! generate_asset_url('public/favicon.ico') !!}" type="image/x-icon">
@@ -40,6 +40,9 @@
     <!-- Bootstrap Select Css -->
     <link href="{!! generate_asset_url('public/plugins/bootstrap-select/css/bootstrap-select.css') !!}" rel="stylesheet" />
 
+    <!-- Bootstrap Datepicker Css -->
+    <link href="{!! generate_asset_url('public/plugins/bootstrap-material-datetimepicker/css/bootstrap-material-datetimepicker.css') !!}" rel="stylesheet" />
+
     <!-- noUISlider Css -->
     <link href="{!! generate_asset_url('public/plugins/nouislider/nouislider.min.css') !!}" rel="stylesheet" />
 
@@ -50,6 +53,7 @@
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
     <link href="{!! generate_asset_url('public/css/themes/all-themes.css') !!}" rel="stylesheet" />
     <link rel="stylesheet" href="{!! generate_asset_url('public/plugins/sweetalert/sweetalert.css') !!}">
+    @yield('custom_page_style')
 </head>
 
 <body class="theme-red">
@@ -66,6 +70,7 @@
 @include('admin.includes.nav_bar')
 <!-- #Top Bar -->
 @include('admin.includes.left_menu_bar')
+
 
 <section class="content">
     @yield('content')
@@ -106,6 +111,12 @@
 
 <!-- Waves Effect Plugin Js -->
 <script src="{!! generate_asset_url('public/plugins/node-waves/waves.js') !!}"></script>
+
+<!-- Moment Plugin Js -->
+<script src="{!! generate_asset_url('public/plugins/momentjs/moment.js') !!}"></script>
+
+<!-- Bootstrap Material Datetime Picker Plugin Js -->
+<script src="{!! generate_asset_url('public/plugins/bootstrap-material-datetimepicker/js/bootstrap-material-datetimepicker.js') !!}"></script>
 
 <!-- Custom Js -->
 <script src="{!! generate_asset_url('public/js/admin.js') !!}"></script>
