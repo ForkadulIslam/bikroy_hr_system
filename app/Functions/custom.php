@@ -10,16 +10,36 @@ function menu_array(){
     return [
         /**=======ADMIN MENU========**/
         [
-            'role_id' => 1,
-            'label'=>'Leave Management',
-            'icon'=>'airline_seat_flat',
-            'link'=>url('module/leave'),
+            'label'=>'My Leave',
+            'role_id'=>1,
+            'icon'=>'perm_identity',
+            'link'=>'#',
+            'sub'=>[
+                [
+                    'label'=>'Create Application',
+                    'link'=>url('module/leave/create')
+                ],
+                [
+                    'label'=>'My Application',
+                    'link'=>url('module/leave')
+                ]
+            ]
         ],
         [
             'role_id' => 1,
             'label'=>'Manage Employee',
             'icon'=>'badge',
-            'link'=>url('/module/employee')
+            'link'=>'#',
+            'sub'=>[
+                [
+                    'label'=>'Create Employee',
+                    'link'=>url('/module/employee/create')
+                ],
+                [
+                    'label'=>'Employee List',
+                    'link'=>url('/module/employee')
+                ]
+            ]
         ],
 
         [
@@ -38,10 +58,20 @@ function menu_array(){
 
         /**=======EXECUTIVE MENU========**/
         [
-            'role_id' => 2,
-            'label'=>'Leave Management',
-            'icon'=>'assignment_turned_in',
-            'link'=>url('module/leave'),
+            'label'=>'Manage My Leave',
+            'role_id'=>2,
+            'icon'=>'perm_identity',
+            'link'=>'#',
+            'sub'=>[
+                [
+                    'label'=>'Create Application',
+                    'link'=>url('module/leave/create')
+                ],
+                [
+                    'label'=>'My Application',
+                    'link'=>url('module/leave')
+                ],
+            ],
         ],
 
 

@@ -20,4 +20,7 @@ class LeaveApplication extends Model
         'status',
         'status_updated_by'
     ];
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
 }

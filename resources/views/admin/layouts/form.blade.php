@@ -53,6 +53,11 @@
     <!-- AdminBSB Themes. You can choose a theme from css/themes instead of get all themes -->
     <link href="{!! generate_asset_url('public/css/themes/all-themes.css') !!}" rel="stylesheet" />
     <link rel="stylesheet" href="{!! generate_asset_url('public/plugins/sweetalert/sweetalert.css') !!}">
+    <style>
+        .table tbody tr td{
+            vertical-align: middle;
+        }
+    </style>
     @yield('custom_page_style')
 </head>
 

@@ -14,12 +14,12 @@
                 <div class="card clearfix">
                     <div class="header clearfix">
                         <h2 class="pull-left">
-                            <i class="material-icons btn btn-sm btn-warning">list</i> <span> &nbsp;Create leave application
+                            <i class="material-icons btn btn-sm btn-warning">list</i> <span> &nbsp; Update leave application
                         </h2>
                         <a href="{!! URL::to('module/leave') !!}" class="pull-right">My all leave</a>
                     </div>
                     <div class="body" id="app">
-                        {!! Form::open(['url'=>URL::to('module/leave'),'class'=>'form','files'=>'true',]) !!}
+                        {!! Form::model($leave, ['url'=>URL::to('module/leave',$leave->id),'class'=>'form','files'=>'true','method'=>'patch']) !!}
                         <div class="row clearfix">
                             <div class="col-xs-6">
                                 <div class="panel panel-default">
@@ -42,7 +42,7 @@
                                                         <i class="material-icons">calendar_month</i>
                                                     </span>
                                                     <div class="form-line">
-                                                        <input type="text" name="from_date" class="form-control datepicker" placeholder="From date.." required>
+                                                        {!! Form::text('from_date',null,['class'=>'form-control datepicker', 'placeholder'=>'From date..', 'required'=>'required']) !!}
                                                     </div>
                                                 </div>
 
@@ -52,7 +52,7 @@
                                                         <i class="material-icons">calendar_month</i>
                                                     </span>
                                                     <div class="form-line">
-                                                        <input type="text" name="to_date" class="form-control datepicker" placeholder="To date.." required>
+                                                        {!! Form::text('to_date',null,['class'=>'form-control datepicker', 'placeholder'=>'To date..', 'required'=>'required']) !!}
                                                     </div>
                                                 </div>
 
@@ -65,15 +65,15 @@
 
                                                 <div class="row" v-if="isHalfDay">
                                                     <div class="col-xs-4">
-                                                        <input type="radio" name="half_day_type" value="1st half" id="firstHalf" class="filled-in chk-col-green" required>
+                                                        <input type="radio" name="half_day_type" value="1st half" id="firstHalf" class="filled-in chk-col-green" required v-model="selectedHalfDayType">
                                                         <label for="firstHalf">First Half</label>
                                                     </div>
                                                     <div class="col-xs-4">
-                                                        <input type="radio" name="half_day_type" value="2nd half" id="secondHalf" class="filled-in chk-col-green" required>
+                                                        <input type="radio" name="half_day_type" value="2nd half" id="secondHalf" class="filled-in chk-col-green" required v-model="selectedHalfDayType">
                                                         <label for="secondHalf">Second Half</label>
                                                     </div>
                                                     <div class="col-xs-4">
-                                                        <input type="radio" name="half_day_type" value="Others" id="others" class="filled-in chk-col-green" required>
+                                                        <input type="radio" name="half_day_type" value="Others" id="others" class="filled-in chk-col-green" required v-model="selectedHalfDayType">
                                                         <label for="others">Others</label>
                                                     </div>
                                                 </div>
@@ -93,7 +93,7 @@
                                         </div>
                                     </div>
                                     <div class="panel-footer">
-                                        <input type="submit" name="submit" value="SUBMIT" class="btn btn-success btn-sm btn-block">
+                                        <input type="submit" name="submit" value="UPDATE" class="btn btn-success btn-sm btn-block">
                                     </div>
                                 </div>
                             </div>
@@ -205,48 +205,12 @@
         var app = new Vue({
             el:'#app',
             data:{
-                email: '', // Add an email property to store the email value
-                emailAvailable: true,
-                isHalfDay:false,
+                isHalfDay:{!! $leave->is_half_day == 1 ? 'true' : 'false' !!},
+                selectedHalfDayType: '{!! $leave->half_day_type !!}',
             },
             methods:{
-                checkEmailAvailability: function () {
-                    this.emailAvailable = true;
-                    // Make an AJAX request to check email availability
-                    axios.post('{{ route("check.email.availability") }}', {
-                        email: this.email,
-                    }).then(response => {
-                        console.log(response.data);
-                        this.emailAvailable = response.data.available;
-                    }).catch(error => {
-                        this.emailAvailable = false;
-                        this.email = '';
-                    });
-
-                },
-                submitForm: async function (){
-                    // Check email availability before submitting the form
-
-                    await this.checkEmailAvailability();
-                    // If email is not available, prevent form submission
-                    if (!this.emailAvailable) {
-                        return false;
-                    }else{
-                        console.log('Should go')
-                        return true;
-                    }
-                    // Otherwise, proceed with form submission
-                    // You may want to show a loading spinner or disable the submit button during the AJAX request
-                },
 
             },
-            // watch: {
-            //     // Watch for changes in the email property
-            //     email: function () {
-            //         // Call the checkEmailAvailability method on email change
-            //         this.checkEmailAvailability();
-            //     },
-            // },
         });
 
 

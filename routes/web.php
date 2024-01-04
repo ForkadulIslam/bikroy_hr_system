@@ -34,8 +34,17 @@ Route::group(['prefix'=>'module'],function(){
     Route::get('delete_team_leader/{id}',[EmployeeController::class, 'delete_team_leader']);
     Route::get('leave/get_leave_count',[LeaveController::class, 'get_leave_count']);
     Route::resource('leave',LeaveController::class);
+    Route::get('delete_leave/{leave_id}',[LeaveController::class,'destroy']);
+    Route::get('mange_team_leave',[LeaveController::class,'mange_team_leave']);
+    Route::get('team_leave_balance',[LeaveController::class,'team_leave_balance']);
+    Route::get('show_team_leave_balance/{employee_id}',[LeaveController::class,'show_team_leave_balance']);
+    Route::get('update_leave_status/{leave_id}/{leave_status}', [LeaveController::class, 'update_leave_status']);
     Route::resource('holiday', HolidayCalendarController::class);
     Route::get('delete_holiday/{id}',[HolidayCalendarController::class,'destroy']);
+    Route::get('manage_tl_leave',[LeaveController::class, 'manage_tl_leave']);
+    Route::get('tl_leave_balance',[LeaveController::class, 'tl_leave_balance']);
+
+
 });
 
 

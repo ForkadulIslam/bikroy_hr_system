@@ -15,7 +15,7 @@ class EmployeeController extends Controller
     }
 
     public function index(){
-        $results = Employee::with('user')->orderBy('attendance_id','desc')->paginate(20);
+        $results = Employee::with('user')->orderBy('id','desc')->paginate(20);
         //return $results;
         return view('admin.modules.employee.index',compact('results'));
     }
@@ -38,7 +38,7 @@ class EmployeeController extends Controller
         ]);
 
         $validatedEmployeeData = $request->validate([
-            'attendance_id' => 'required|unique:employees',
+            'attendance_id' => 'required',
             'fathers_name' => 'required',
             'phone_no' => 'required',
             'date_of_birth' => 'required|date',
@@ -115,6 +115,7 @@ class EmployeeController extends Controller
         TeamLeader::find($id)->delete();
         return redirect()->to('module/manage_team_leader')->with('message','Team leader deleted');
     }
+
 
 
 }

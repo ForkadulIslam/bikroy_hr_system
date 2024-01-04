@@ -29,8 +29,8 @@ class Admin extends Controller{
         $this->middleware('RedirectIfNotAuthenticate');
     }
     public function index(){
-        //return \auth()->user();
-        return view('admin.dashboard');
+        $leave_details =  auth()->user()->employee->getRemainingLeaveForCurrentYear();
+        return view('admin.dashboard', compact('leave_details'));
     }
 
 

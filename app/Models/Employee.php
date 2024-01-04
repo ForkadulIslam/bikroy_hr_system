@@ -64,6 +64,11 @@ class Employee extends Model
             ->where('leave_type','Maternity Leave for 1st Child')
             ->where('status', 'Approved');
     }
+    public function maternity_leave_for_2nd_child(){
+        return $this->hasMany(LeaveApplication::class, 'user_id','user_id')
+            ->where('leave_type','Maternity Leave for 2nd Child')
+            ->where('status', 'Approved');
+    }
     public function applied_work_from_home(){
         return $this->hasMany(LeaveApplication::class, 'user_id','user_id')
             ->where('leave_type','Work From Home')
@@ -89,79 +94,107 @@ class Employee extends Model
         $yearStartDate = Carbon::createFromDate($currentYear, 1, 1);
         $yearEndDate = Carbon::createFromDate($currentYear, 12, 31);
 
-
-        $total_earned_leave = 0;
         $earned_leave_per_day = 0.043;
         if ($joiningDate->diffInMonths($currentDate) > 12) {
-            $total_earned_leave += ($earned_leave_per_day * $joiningDate->diffInDays($currentDate)) + $earned_leave_balance;
-            $total_earned_leave -= $this->earned_leave->count();
+            $opening_earned_leave = ($earned_leave_per_day * $joiningDate->diffInDays($currentDate)) + $earned_leave_balance;
+            $applied_earned_leave = $this->earned_leave()->sum('duration');
+            $leave_details['earned_leave']['opening'] = round($opening_earned_leave, 1);
+            $leave_details['earned_leave']['applied'] = $applied_earned_leave;
+            $leave_details['earned_leave']['balance'] = round($opening_earned_leave, 1) - $applied_earned_leave;
+        }else{
+            $leave_details['earned_leave']['opening'] = 0;
+            $leave_details['earned_leave']['applied'] = 0;
+            $leave_details['earned_leave']['balance'] = 0;
         }
-
-        $remainingEarnedLeave = round($total_earned_leave, 1);
-        $leave_details['earned_leave'] = $remainingEarnedLeave;
 
         // Calculate the sick leave based on the employee's joining date
         if ($joiningDate->year == $currentYear){
-            $proratedSickLeaveDays = ($joiningDate->diffInDays($yearEndDate) / 365) * $sick_leave_balance;
+            $proratedSickLeaveDays = round(($joiningDate->diffInDays($yearEndDate) / 365) * $sick_leave_balance, 1);
+            //return $proratedSickLeaveDays;
+            $leave_details['sick_leave']['opening'] = $proratedSickLeaveDays;
+            $leave_details['sick_leave']['applied'] = $this->sick_leave()->sum('duration');
+            $leave_details['sick_leave']['balance'] = $proratedSickLeaveDays - $this->sick_leave()->sum('duration');
         }else{
-            $proratedSickLeaveDays = $sick_leave_balance;
+            $applied_sick_leave = round($this->sick_leave()->whereYear('created_at', $currentYear)->sum('duration'),1);
+            $leave_details['sick_leave']['opening'] = $sick_leave_balance;
+            $leave_details['sick_leave']['applied'] = $applied_sick_leave;
+            $leave_details['sick_leave']['balance'] = $sick_leave_balance - $applied_sick_leave;
         }
 
-        $proratedSickLeaveDays -= $this->sick_leave->count();
-
-        $remainingSickLeave = round($proratedSickLeaveDays, 1);
-        $leave_details['sick_leave'] = $remainingSickLeave;
         // Calculate the casual leave based on the employee's joining date
         if ($joiningDate->year == $currentYear){
-            $proratedCasualLeaveDays = ($joiningDate->diffInDays($yearEndDate) / 365) * $casual_leave_balance;
+            $proratedCasualLeaveDays = round(($joiningDate->diffInDays($yearEndDate) / 365) * $casual_leave_balance, 1);
+            $leave_details['casual_leave']['opening'] = $proratedCasualLeaveDays;
+            $leave_details['casual_leave']['applied'] = $this->casual_leave()->sum('duration');
+            $leave_details['casual_leave']['balance'] = $proratedCasualLeaveDays - $this->casual_leave()->sum('duration');
         }else{
-            $proratedCasualLeaveDays = $casual_leave_balance;
+            $applied_casual_leave = $this->casual_leave()->whereYear('created_at', $currentYear)->sum('duration');
+            $leave_details['casual_leave']['opening'] = $casual_leave_balance;
+            $leave_details['casual_leave']['applied'] = $applied_casual_leave;
+            $leave_details['casual_leave']['balance'] = $casual_leave_balance - $applied_casual_leave;
         }
-        $proratedCasualLeaveDays -= $this->casual_leave->count();
-        $remainingCasualLeave = round(max($proratedCasualLeaveDays, 0), 1);
-        $leave_details['casual_leave'] = $remainingCasualLeave;
 
         // Calculate the paternal leave for 1st child
         if ($joiningDate->diffInMonths($currentDate) <= 6){
-            $remainingPaternalLeave = 0;
+            $leave_details['paternal_leave_for_first_child']['opening'] = 0;
+            $leave_details['paternal_leave_for_first_child']['applied'] = $this->paternal_leave_for_1st_child()->sum('duration');
+            $leave_details['paternal_leave_for_first_child']['balance'] = 0 - $this->paternal_leave_for_1st_child()->sum('duration');
         }else{
-            $remainingPaternalLeave = $paternal_leave_balance;
+            $applied_paternal_leave = $this->paternal_leave_for_1st_child()->whereYear('created_at', $currentYear)->sum('duration');
+            $leave_details['paternal_leave_for_first_child']['opening'] = $paternal_leave_balance;
+            $leave_details['paternal_leave_for_first_child']['applied'] = $applied_paternal_leave;
+            $leave_details['paternal_leave_for_first_child']['balance'] = $paternal_leave_balance - $applied_paternal_leave;
         }
-        $remainingPaternalLeave -= $this->paternal_leave_for_1st_child->count();
-        $leave_details['paternal_leave_for_first_child'] = $remainingPaternalLeave;
 
         // Calculate the paternal leave for 2nd child
         if ($joiningDate->diffInMonths($currentDate) <= 6){
-            $remainingPaternalLeave = 0;
+            $leave_details['paternal_leave_for_second_child']['opening'] = 0;
+            $leave_details['paternal_leave_for_second_child']['applied'] = $this->paternal_leave_for_2nd_child()->sum('duration');
+            $leave_details['paternal_leave_for_second_child']['balance'] = 0 - $this->paternal_leave_for_2nd_child()->sum('duration');
         }else{
-            $remainingPaternalLeave = $paternal_leave_balance;
+            $applied_paternal_leave = $this->paternal_leave_for_2nd_child()->whereYear('created_at', $currentYear)->sum('duration');
+            $leave_details['paternal_leave_for_second_child']['opening'] = $paternal_leave_balance;
+            $leave_details['paternal_leave_for_second_child']['applied'] = $applied_paternal_leave;
+            $leave_details['paternal_leave_for_second_child']['balance'] = $paternal_leave_balance - $applied_paternal_leave;
         }
-        $remainingPaternalLeave -= $this->paternal_leave_for_2nd_child->count();
-        $leave_details['paternal_leave_for_second_child'] = $remainingPaternalLeave;
 
         // Calculate the maternity leave for 1st child
         if ($joiningDate->diffInMonths($currentDate) <= 6){
-            $remainingMaternityLeave = 0;
+            $leave_details['maternity_leave_for_first_child']['opening'] = 0;
+            $leave_details['maternity_leave_for_first_child']['applied'] = $this->maternity_leave_for_1st_child()->sum('duration');
+            $leave_details['maternity_leave_for_first_child']['balance'] = 0 - $this->maternity_leave_for_1st_child()->sum('duration');
         }else{
-            $remainingMaternityLeave = $maternity_leave_balance;
+            $applied_maternity_leave = $this->maternity_leave_for_1st_child()->whereYear('created_at', $currentYear)->sum('duration');
+            $leave_details['maternity_leave_for_first_child']['opening'] = $maternity_leave_balance;
+            $leave_details['maternity_leave_for_first_child']['applied'] = $applied_maternity_leave;
+            $leave_details['maternity_leave_for_first_child']['balance'] = $maternity_leave_balance - $applied_maternity_leave;
         }
-        $remainingMaternityLeave -= $this->maternity_leave_for_1st_child->count();
-        $leave_details['maternity_leave_for_first_child'] = $remainingMaternityLeave;
 
         // Calculate the maternity leave for 2nd child
         if ($joiningDate->diffInMonths($currentDate) <= 6){
-            $remainingMaternityLeave = 0;
+            $leave_details['maternity_leave_for_second_child']['opening'] = 0;
+            $leave_details['maternity_leave_for_second_child']['applied'] = $this->maternity_leave_for_2nd_child()->sum('duration');
+            $leave_details['maternity_leave_for_second_child']['balance'] = 0 - $this->maternity_leave_for_2nd_child()->sum('duration');
         }else{
-            $remainingMaternityLeave = $maternity_leave_balance;
+            $applied_maternity_leave = $this->maternity_leave_for_2nd_child()->whereYear('created_at', $currentYear)->sum('duration');
+            $leave_details['maternity_leave_for_second_child']['opening'] = $maternity_leave_balance;
+            $leave_details['maternity_leave_for_second_child']['applied'] = $applied_maternity_leave;
+            $leave_details['maternity_leave_for_second_child']['balance'] = $maternity_leave_balance - $applied_maternity_leave;
         }
-        $remainingMaternityLeave -= $this->maternity_leave_for_1st_child->count();
-        $leave_details['maternity_leave_for_second_child'] = $remainingMaternityLeave;
 
-        $leave_details['applied_work_from_home'] = $this->applied_work_from_home->count();
-        $leave_details['applied_non_paid_leave'] = $this->applied_non_paid_leave->count();
+        // Calculate the work from home
+        $applied_work_from_home = $this->applied_work_from_home()->whereYear('created_at', $currentYear)->sum('duration');
+        $leave_details['applied_work_from_home']['opening'] = $applied_work_from_home;
+        $leave_details['applied_work_from_home']['applied'] = $applied_work_from_home;
+        $leave_details['applied_work_from_home']['balance'] = $applied_work_from_home;
+
+        // Calculate the non paid leave
+        $applied_non_paid_leave = $this->applied_non_paid_leave()->whereYear('created_at', $currentYear)->sum('duration');
+        $leave_details['applied_non_paid_leave']['opening'] = $applied_non_paid_leave;
+        $leave_details['applied_non_paid_leave']['applied'] = $applied_non_paid_leave;
+        $leave_details['applied_non_paid_leave']['balance'] = $applied_non_paid_leave;
 
         return $leave_details;
-
     }
 
 }

@@ -20,7 +20,9 @@
             <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
                 <div class="card">
                     <div class="header clearfix">
-                        <h2 class="pull-left">Create new team leader</h2>
+                        <h2 class="pull-left">
+                            <i class="material-icons btn btn-sm btn-warning">list</i> <span>&nbsp; Create new team leader</span>
+                        </h2>
                         <a href="{!! URL::to('module/manage_team_leader') !!}" class="pull-right">All team leader</a>
                     </div>
                     <div class="body" id="app">

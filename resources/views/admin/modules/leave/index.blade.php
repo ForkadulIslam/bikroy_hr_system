@@ -29,9 +29,9 @@
                                 <th>Reason</th>
                                 <th>From date</th>
                                 <th>To date</th>
-                                <th>Status</th>
+                                <th>Duration</th>
                                 <th>Submitted At</th>
-                                <th>Option</th>
+                                <th>Status</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -39,14 +39,18 @@
                             <tr class="font-12">
                                 <td>{!! ($i+1) !!}</td>
                                 <td>{!! $result->leave_type !!}</td>
-                                <td>{!! $result->reson !!}</td>
+                                <td>{!! $result->reason !!}</td>
                                 <td>{!! $result->from_date !!}</td>
                                 <td>{!! $result->to_date !!}</td>
-                                <td>{!! $result->status !!}</td>
+                                <td>{!! $result->duration !!}</td>
                                 <td>{!! $result->created_at->toDateString() !!}</td>
                                 <td>
-                                    <a data-toggle="tooltip" data-title="Edit & Preview" class="btn btn-xs btn-warning" href="{!! URL::to('module/banner/'.$result->id,'edit') !!}"><i class="material-icons">edit</i></a>
-                                    <a data-toggle="tooltip" data-title="Delete" class="btn btn-xs btn-danger delete_with_swal" href="{!! URL::to('module/banner',$result->id) !!}"><i class="material-icons">remove</i></a>
+                                    @if($result->status == 'Pending')
+                                        <a data-toggle="tooltip" data-title="Edit & Preview" class="btn btn-xs btn-warning" href="{!! URL::to('module/leave/'.$result->id,'edit') !!}"><i class="material-icons">edit</i></a>
+                                        <a data-toggle="tooltip" data-title="Delete" class="btn btn-xs btn-danger" href="{!! URL::to('module/delete_leave',$result->id) !!}"><i class="material-icons">remove</i></a>
+                                    @else
+                                        <span class="badge {!! $result->status == "Approved" ? "bg-green" : 'bg-red' !!}">{!! $result->status !!}</span>
+                                    @endif
                                 </td>
                             </tr>
                             @endforeach
