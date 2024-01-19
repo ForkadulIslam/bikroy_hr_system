@@ -30,6 +30,7 @@ class Admin extends Controller{
     }
     public function index(){
         $leave_details =  auth()->user()->employee->getRemainingLeaveForCurrentYear();
+        //return \App\Models\TeamLeader::where('user_id',auth()->user()->id)->first();
         return view('admin.dashboard', compact('leave_details'));
     }
 

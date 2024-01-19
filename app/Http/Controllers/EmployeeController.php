@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\EmployeeImport;
 use App\Models\Employee;
 use App\Models\TeamLeader;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
 
 class EmployeeController extends Controller
 {
@@ -91,29 +93,38 @@ class EmployeeController extends Controller
     }
     public function team_leader_name_suggestion(Request $request){
         $employee_ids = Employee::where('department',$request->department)->pluck('user_id');
-        $users = User::whereIn('id',$employee_ids)->where('name','LIKE','%'.$request->q.'%')->select('id','name')->get();
+        $users = User::where('name','LIKE','%'.$request->q.'%')->select('id','name')->get();
         $users->each(function($item){
             $item->value = $item->id;
             $item->text = $item->name.' <span class="font-12 .font-italic"> - '.$item->employee->attendance_id.'</span>';
         });
         return $users->toArray();
     }
+
     public function save_team_leader(Request $request){
-        $teamLeader = TeamLeader::where('department', $request->department)->first();
-        if($teamLeader){
-            $teamLeader->fill(['user_id'=>$request->user_id])->save();
-        }else{
-            TeamLeader::create([
-                'user_id' => $request->user_id,
-                'department' =>$request->department,
-            ]);
-        }
+        TeamLeader::create([
+            'user_id' => $request->user_id,
+            'department' =>$request->department,
+        ]);
         return redirect()->to('module/manage_team_leader')->with('message','Team leader added');
     }
 
     public function delete_team_leader($id){
         TeamLeader::find($id)->delete();
         return redirect()->to('module/manage_team_leader')->with('message','Team leader deleted');
+    }
+
+    public function employee_excel_import(){
+        return view('admin.modules.employee.excel_import');
+    }
+
+    public function post_employee_excel(Request $request){
+        //return $request->file('employee_format')->extension();
+        request()->validate([
+            'employee_format' => 'required|mimes:xlsx|max:2048'
+        ]);
+        Excel::import(new EmployeeImport, $request->file('employee_format'));
+        return redirect()->route('employee.index')->with('message', 'Data is being processed');
     }
 
 

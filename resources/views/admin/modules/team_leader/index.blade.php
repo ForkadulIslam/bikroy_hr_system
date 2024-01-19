@@ -27,8 +27,7 @@
                                     <th>Team leader</th>
                                     <th>Employee ID</th>
                                     <th>Designation</th>
-                                    <th>Department</th>
-                                    <th>Joining Date</th>
+                                    <th>Team</th>
                                     <th>Option</th>
                                 </tr>
                             </thead>
@@ -38,8 +37,7 @@
                                 <td>{!! $result->user->name !!}</td>
                                 <td>{!! $result->user->employee->attendance_id !!}</td>
                                 <td>{!! $result->user->employee->designation !!}</td>
-                                <td>{!! $result->user->employee->department !!}</td>
-                                <td>{!! $result->user->employee->date_of_joining !!}</td>
+                                <td>{!! $result->department !!}</td>
                                 <td>
                                     <a data-toggle="tooltip" data-title="Edit & Preview" class="btn btn-xs btn-danger" href="{!! URL::to('module/delete_team_leader',$result->id) !!}"><i class="material-icons">delete</i></a>
                                 </td>

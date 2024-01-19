@@ -23,8 +23,8 @@
                         <table class="table table-striped table-bordered table-hover">
                             <thead class="bg-teal">
                             <tr>
-                                <th>#</th>
                                 <th>Employee</th>
+                                <th>Department</th>
                                 <th>Leave type</th>
                                 <th>Reason</th>
                                 <th>From date</th>
@@ -38,8 +38,8 @@
                             <tbody>
                             @foreach($results as $i=>$result)
                                 <tr class="font-12">
-                                    <td>{!! ($i+1) !!}</td>
                                     <td>{!! $result->user->name !!}</td>
+                                    <td>{!! $result->user->employee->department !!}</td>
                                     <td>{!! $result->leave_type !!}</td>
                                     <td>{!! $result->reson !!}</td>
                                     <td>{!! $result->from_date !!}</td>

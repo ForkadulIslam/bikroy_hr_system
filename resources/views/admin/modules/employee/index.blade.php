@@ -26,6 +26,7 @@
                             <tr>
                                 <th>Employee ID</th>
                                 <th>Name</th>
+                                <th>Email</th>
                                 <th>Designation</th>
                                 <th>Department</th>
                                 <th>Joining Date</th>
@@ -39,6 +40,7 @@
                                 <td>
                                     <a data-toggle="tooltip" data-title="Edit & Preview" href="{!! URL::to('module/employee/'.$result->id,'edit') !!}">{!! $result->user->name !!}</a>
                                 </td>
+                                <td>{!! $result->user->email !!}</td>
                                 <td>{!! $result->designation !!}</td>
                                 <td>{!! $result->department !!}</td>
                                 <td>{!! $result->date_of_joining !!}</td>
@@ -49,6 +51,7 @@
                             @endforeach
                             </tbody>
                         </table>
+                        {!! $results->links() !!}
                     </div>
                 </div>
             </div>

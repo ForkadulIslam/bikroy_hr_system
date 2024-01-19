@@ -157,18 +157,10 @@
                         console.log('Should go')
                         return true;
                     }
-                    // Otherwise, proceed with form submission
-                    // You may want to show a loading spinner or disable the submit button during the AJAX request
                 },
 
             },
-            // watch: {
-            //     // Watch for changes in the email property
-            //     email: function () {
-            //         // Call the checkEmailAvailability method on email change
-            //         this.checkEmailAvailability();
-            //     },
-            // },
+
         });
 
 

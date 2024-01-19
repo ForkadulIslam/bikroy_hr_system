@@ -12,6 +12,7 @@
 */
 
 use App\Http\Controllers\Admin;
+use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\HolidayCalendarController;
@@ -44,6 +45,12 @@ Route::group(['prefix'=>'module'],function(){
     Route::get('manage_tl_leave',[LeaveController::class, 'manage_tl_leave']);
     Route::get('tl_leave_balance',[LeaveController::class, 'tl_leave_balance']);
 
+    Route::get('employee_excel_import',[EmployeeController::class, 'employee_excel_import']);
+    Route::post('post_employee_excel', [EmployeeController::class, 'post_employee_excel']);
+    Route::get('leave_report',[LeaveController::class, 'leave_report']);
+
+    Route::resource('attendance', AttendanceController::class);
+    Route::get('attendance_log_by_user/{user_id}',[AttendanceController::class, 'attendance_log_by_user']);
 
 });
 

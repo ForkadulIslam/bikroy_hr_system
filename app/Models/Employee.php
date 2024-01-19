@@ -80,6 +80,11 @@ class Employee extends Model
             ->where('status', 'Approved');
     }
 
+    public function all_approved_leave(){
+        return $this->hasMany(LeaveApplication::class, 'user_id','user_id')
+            ->where('status', 'Approved');
+    }
+
     public function getRemainingLeaveForCurrentYear()
     {
         $leave_details = [];
@@ -195,6 +200,10 @@ class Employee extends Model
         $leave_details['applied_non_paid_leave']['balance'] = $applied_non_paid_leave;
 
         return $leave_details;
+    }
+
+    public function attendance(){
+        return $this->hasMany(Attendance::class, 'attendance_id', 'attendance_id');
     }
 
 }

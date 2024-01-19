@@ -26,7 +26,7 @@
                         <div class="header">
                             <div class="row clearfix">
                                 <div class="col-xs-12">
-                                    <h5 class="">Pending Leave Application</h5>
+                                    <h5 class="">Team's Leave Application</h5>
                                 </div>
                             </div>
                         </div>
@@ -37,6 +37,7 @@
                                         <thead class="bg-grey">
                                         <tr class="font-12">
                                             <th>Employee</th>
+                                            <th>Department</th>
                                             <th>Leave type</th>
                                             <th>Reason</th>
                                             <th>From date</th>
@@ -49,18 +50,17 @@
                                         </thead>
                                         <tbody>
                                         @php
-                                            $team_leader = \App\Models\TeamLeader::where('user_id',auth()->user()->id)->first();
+                                            $departments = \App\Models\TeamLeader::where('user_id',auth()->user()->id)->pluck('department');
+                                            $all_team_leaders = \App\Models\TeamLeader::groupBy('user_id')->pluck('user_id');
                                             $pending_leave_application = [];
-                                            if($team_leader){
-                                               $department =  $team_leader->department;
-                                               $user_ids =  \App\Models\Employee::where('department',$department)->where('user_id','!=',auth()->user()->id)->pluck('user_id');
-                                               //return $user_ids;
-                                               $pending_leave_application =  \App\Models\LeaveApplication::orderBy('id','desc')->where('status','Pending')->whereIn('user_id',$user_ids)->paginate(20);
-                                            }
+                                            $user_ids =  \App\Models\Employee::whereIn('department',$departments)->where('user_id','!=',auth()->user()->id)->whereNotIn('user_id',$all_team_leaders)->pluck('user_id');
+                                            //return $user_ids;
+                                            $pending_leave_application =  \App\Models\LeaveApplication::orderBy('id','desc')->where('status','Pending')->whereIn('user_id',$user_ids)->paginate(20);
                                         @endphp
                                         @foreach($pending_leave_application as $i=>$result)
                                             <tr class="font-12">
                                                 <td>{!! $result->user->name !!}</td>
+                                                <td>{!! $result->user->employee->department !!}</td>
                                                 <td>{!! $result->leave_type !!}</td>
                                                 <td>{!! $result->reson !!}</td>
                                                 <td>{!! $result->from_date !!}</td>
@@ -89,72 +89,75 @@
                     </div>
                 </div>
             </div>
-            @elseif(auth()->user()->employee->designation == 'CEO')
-                @php
-                    $team_leader_ids = \App\Models\TeamLeader::pluck('user_id');
-                    //print_r($team_leader_ids);
-                    $pending_leave_application =  \App\Models\LeaveApplication::orderBy('id','desc')->where('status','Pending')->whereIn('user_id',$team_leader_ids)->paginate(20);
-                @endphp
+        @endif
+        @if(auth()->user()->employee->designation == 'CEO')
+            @php
+                $team_leader_ids = \App\Models\TeamLeader::pluck('user_id');
+                //print_r($team_leader_ids);
+                $pending_leave_application =  \App\Models\LeaveApplication::orderBy('id','desc')->where('status','Pending')->whereIn('user_id',$team_leader_ids)->paginate(20);
+            @endphp
             @if(count($pending_leave_application) > 0)
-            <div class="row clearfix">
-                <div class="col-xs-12">
-                    <div class="card">
-                        <div class="header">
-                            <div class="row clearfix">
-                                <div class="col-xs-12">
-                                    <h5 class="">Pending Leave Application</h5>
+                <div class="row clearfix">
+                    <div class="col-xs-12">
+                        <div class="card">
+                            <div class="header">
+                                <div class="row clearfix">
+                                    <div class="col-xs-12">
+                                        <h5 class="">Team leader's Leave Application</h5>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="body">
-                            <div class="row clearfix">
-                                <div class="col-xs-12">
-                                    <table class="table table-striped table-bordered table-hover">
-                                        <thead class="bg-grey">
-                                        <tr class="font-12">
-                                            <th>Employee</th>
-                                            <th>Leave type</th>
-                                            <th>Reason</th>
-                                            <th>From date</th>
-                                            <th>To date</th>
-                                            <th>Duration</th>
-                                            <th>Status</th>
-                                            <th>Submitted At</th>
-                                            <th>Option</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        @foreach($pending_leave_application as $i=>$result)
+                            <div class="body">
+                                <div class="row clearfix">
+                                    <div class="col-xs-12">
+                                        <table class="table table-striped table-bordered table-hover">
+                                            <thead class="bg-grey">
                                             <tr class="font-12">
-                                                <td>{!! $result->user->name !!}</td>
-                                                <td>{!! $result->leave_type !!}</td>
-                                                <td>{!! $result->reson !!}</td>
-                                                <td>{!! $result->from_date !!}</td>
-                                                <td>{!! $result->to_date !!}</td>
-                                                <td>{!! $result->duration !!}</td>
-                                                <td>
-                                                    @if($result->status == 'Approved')
-                                                        <span class="badge bg-green">{!! $result->status !!}</span>
-                                                    @elseif($result->status == 'Rejected')
-                                                        <span class="badge bg-red">{!! $result->status !!}</span>
-                                                    @elseif($result->status == 'Pending')
-                                                        <span class="badge bg-orange">{!! $result->status !!}</span>
-                                                    @endif
-                                                </td>
-                                                <td>{!! $result->created_at->toDateString() !!}</td>
-                                                <td>
-                                                    {!! Form::select('leave_type', ['Approved'=>'Approved', 'Rejected'=>'Rejected'], $result->status, ['class'=>'form-control selectpicker', 'required'=>'true', 'v-model'=>'selectedStatus', '@change'=>'on_update_status('.$result->id.')','placeholder'=>'--Please Select--']) !!}
-                                                </td>
+                                                <th>Employee</th>
+                                                <th>Department</th>
+                                                <th>Leave type</th>
+                                                <th>Reason</th>
+                                                <th>From date</th>
+                                                <th>To date</th>
+                                                <th>Duration</th>
+                                                <th>Status</th>
+                                                <th>Submitted At</th>
+                                                <th>Option</th>
                                             </tr>
-                                        @endforeach
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                            @foreach($pending_leave_application as $i=>$result)
+                                                <tr class="font-12">
+                                                    <td>{!! $result->user->name !!}</td>
+                                                    <td>{!! $result->user->employee->department !!}</td>
+                                                    <td>{!! $result->leave_type !!}</td>
+                                                    <td>{!! $result->reson !!}</td>
+                                                    <td>{!! $result->from_date !!}</td>
+                                                    <td>{!! $result->to_date !!}</td>
+                                                    <td>{!! $result->duration !!}</td>
+                                                    <td>
+                                                        @if($result->status == 'Approved')
+                                                            <span class="badge bg-green">{!! $result->status !!}</span>
+                                                        @elseif($result->status == 'Rejected')
+                                                            <span class="badge bg-red">{!! $result->status !!}</span>
+                                                        @elseif($result->status == 'Pending')
+                                                            <span class="badge bg-orange">{!! $result->status !!}</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>{!! $result->created_at->toDateString() !!}</td>
+                                                    <td>
+                                                        {!! Form::select('leave_type', ['Approved'=>'Approved', 'Rejected'=>'Rejected'], $result->status, ['class'=>'form-control selectpicker', 'required'=>'true', 'v-model'=>'selectedStatus', '@change'=>'on_update_status('.$result->id.')','placeholder'=>'--Please Select--']) !!}
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
             @endif
         @endif
         <div class="row">

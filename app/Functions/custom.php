@@ -10,7 +10,7 @@ function menu_array(){
     return [
         /**=======ADMIN MENU========**/
         [
-            'label'=>'My Leave',
+            'label'=>'Leave',
             'role_id'=>1,
             'icon'=>'perm_identity',
             'link'=>'#',
@@ -22,6 +22,10 @@ function menu_array(){
                 [
                     'label'=>'My Application',
                     'link'=>url('module/leave')
+                ],
+                [
+                    'label'=>'Department wise leave',
+                    'link'=>url('module/leave_report')
                 ]
             ]
         ],
@@ -36,6 +40,10 @@ function menu_array(){
                     'link'=>url('/module/employee/create')
                 ],
                 [
+                    'label'=>'Upload Employee Data',
+                    'link'=>url('/module/employee_excel_import')
+                ],
+                [
                     'label'=>'Employee List',
                     'link'=>url('/module/employee')
                 ]
@@ -47,6 +55,23 @@ function menu_array(){
             'label'=>'Manage Team Leader',
             'icon'=>'badge',
             'link'=>url('/module/manage_team_leader')
+        ],
+
+        [
+            'role_id' => 1,
+            'label'=>'Attendance',
+            'icon'=>'badge',
+            'link'=>'#',
+            'sub'=>[
+                [
+                    'label' => 'Report',
+                    'link' =>url('/module/attendance')
+                ],
+                [
+                    'label' => 'Upload',
+                    'link' =>url('/module/attendance/create')
+                ]
+            ]
         ],
 
         [
@@ -125,5 +150,14 @@ function designation_list(){
         'Director' => 'Director',
         'CEO' => 'CEO',
     ];
+}
+function get_month_list(){
+    $month = [];
+
+    for ($m=1; $m<=12; $m++) {
+        $name  = date('F', mktime(0,0,0,$m, 1, date('Y')));
+        $month[$name] = $name;
+    }
+    return $month;
 }
 

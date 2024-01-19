@@ -39,7 +39,8 @@
                             <li class=""><a href="{!! url('module/team_leave_balance') !!}">Team Leave Balance</a></li>
                         </ul>
                     </li>
-                    @elseif(auth()->user()->employee->designation == 'CEO')
+                @endif
+                @if(auth()->user()->employee->designation == 'CEO')
                     <li class="">
                         <a href="javascript:void(0);" class="menu-toggle">
                             <i class="material-icons">perm_identity</i>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Employee;
+use App\Models\HolidayCalendar;
 use App\Models\LeaveApplication;
 use App\Models\TeamLeader;
 use Carbon\Carbon;
@@ -26,13 +27,24 @@ class LeaveController extends Controller
     public function store(Request $request){
         $inputs = $request->only(['leave_type','from_date','to_date','reason']);
 
-        if(isset($request->is_half_day)){
+        $holidays = HolidayCalendar::whereBetween('holiday_date', [$inputs['from_date'], $inputs['to_date']])
+            ->pluck('holiday_date')
+            ->toArray();
+        //return $holidays;
+        $from = Carbon::parse($inputs['from_date']);
+        $to = Carbon::parse($inputs['to_date']);
+        $duration = 0;
+        while ($from <= $to) {
+            if ($from->dayOfWeek !== Carbon::FRIDAY && $from->dayOfWeek !== Carbon::SATURDAY && !in_array($from->toDateString(), $holidays)) {
+                $duration++;
+            }
+            $from->addDay();
+        }
+        $inputs['duration'] = $duration;
+        if((($inputs['duration'] == 1) && $inputs['from_date'] == $inputs['to_date']) && isset($request->is_half_day) && $request->leave_type != 'Earned Leave'){
             $inputs['is_half_day'] = 1;
             $inputs['half_day_type'] = $request->half_day_type;
             $inputs['duration'] = .5;
-        }else{
-            $from = Carbon::parse($inputs['from_date']);
-            $inputs['duration'] = $from->diffInDays(Carbon::parse($inputs['to_date']))+1;
         }
         $inputs['user_id'] = auth()->user()->id;
         if(auth()->user()->employee->designation == "CEO"){
@@ -54,13 +66,24 @@ class LeaveController extends Controller
     public function update(Request $request, $id){
         $inputs = $request->only(['leave_type','from_date','to_date','reason']);
 
-        if(isset($request->is_half_day)){
+        $holidays = HolidayCalendar::whereBetween('holiday_date', [$inputs['from_date'], $inputs['to_date']])
+            ->pluck('holiday_date')
+            ->toArray();
+        //return $holidays;
+        $from = Carbon::parse($inputs['from_date']);
+        $to = Carbon::parse($inputs['to_date']);
+        $duration = 0;
+        while ($from <= $to) {
+            if ($from->dayOfWeek !== Carbon::FRIDAY && $from->dayOfWeek !== Carbon::SATURDAY && !in_array($from->toDateString(), $holidays)) {
+                $duration++;
+            }
+            $from->addDay();
+        }
+        $inputs['duration'] = $duration;
+        if((($inputs['duration'] == 1) && $inputs['from_date'] == $inputs['to_date']) && isset($request->is_half_day) && $request->leave_type != 'Earned Leave'){
             $inputs['is_half_day'] = 1;
             $inputs['half_day_type'] = $request->half_day_type;
             $inputs['duration'] = .5;
-        }else{
-            $from = Carbon::parse($inputs['from_date']);
-            $inputs['duration'] = $from->diffInDays(Carbon::parse($inputs['to_date']))+1;
         }
         $inputs['user_id'] = auth()->user()->id;
         if(auth()->user()->employee->designation == "CEO"){
@@ -78,13 +101,10 @@ class LeaveController extends Controller
 
     public function mange_team_leave(){
         $team_leader = TeamLeader::where('user_id',auth()->user()->id)->first();
-        if($team_leader){
-            $department =  $team_leader->department;
-            $user_ids = Employee::where('department',$department)->where('user_id','!=',auth()->user()->id)->pluck('user_id');
-            //return $user_ids;
-            $results = LeaveApplication::orderBy('id','desc')->whereIn('user_id',$user_ids)->paginate(20);
-            return view('admin.modules.leave.team_leave',compact('results'));
-        }
+        $department =  TeamLeader::where('user_id',auth()->user()->id)->pluck('department');
+        $user_ids = Employee::whereIn('department',$department)->where('user_id','!=',auth()->user()->id)->pluck('user_id');
+        $results = LeaveApplication::orderBy('id','desc')->whereIn('user_id',$user_ids)->paginate(20);
+        return view('admin.modules.leave.team_leave',compact('results'));
     }
     public function team_leave_balance(){
         $team_leader = TeamLeader::where('user_id',auth()->user()->id)->first();
@@ -117,6 +137,14 @@ class LeaveController extends Controller
         $results = Employee::whereIn('user_id',$team_leader_ids)->get();
         //return $employees->first()->getRemainingLeaveForCurrentYear();
         return view('admin.modules.leave.tl_leave_balance',compact('results'));
+    }
+    public function leave_report(){
+        if(auth()->user()->role_id != 1) return abort(404);
+        $department = request()->department ? request()->department : 'Business Development';
+        //return $department;
+        $results = Employee::where('department',$department)->get();
+        return view('admin.modules.leave.department_wise_employee_list',compact('results','department'));
+
     }
 
 }
