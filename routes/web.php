@@ -52,6 +52,9 @@ Route::group(['prefix'=>'module'],function(){
     Route::resource('attendance', AttendanceController::class);
     Route::get('attendance_log_by_user/{user_id}',[AttendanceController::class, 'attendance_log_by_user']);
 
+    Route::get('change_password', [Admin::class, 'change_password']);
+    Route::post('save_change_password', [Admin::class, 'save_change_password']);
+
 });
 
 

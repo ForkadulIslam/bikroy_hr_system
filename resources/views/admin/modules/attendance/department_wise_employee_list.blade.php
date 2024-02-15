@@ -52,12 +52,12 @@
                                     <td>{!! $result->date_of_joining !!}</td>
                                     <td>
                                         @php
-                                        $total_late_min = 0;
-                                        foreach($result->attendance_log_in_out as $att_log){
-                                            //print_r($att_log);
-                                            $total_late_min += $att_log['late_min'];
-                                        }
-                                        echo $total_late_min;
+                                            $total_late_min = 0;
+                                            foreach($result->attendance_log_in_out as $att_log){
+                                                //print_r($att_log);
+                                                $total_late_min += $att_log['late_min'];
+                                            }
+                                            echo $total_late_min;
                                         @endphp
                                     </td>
                                     <td>

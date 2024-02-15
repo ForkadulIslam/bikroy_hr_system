@@ -14,7 +14,7 @@
                 <div class="card clearfix">
                     <div class="header clearfix">
                         <h2 class="pull-left">
-                            <i class="material-icons btn btn-sm btn-warning">list</i> <span> &nbsp; Update leave application
+                            <i class="material-icons btn btn-sm btn-warning">list</i> <span> &nbsp; Update leave application </span>
                         </h2>
                         <a href="{!! URL::to('module/leave') !!}" class="pull-right">My all leave</a>
                     </div>
@@ -33,7 +33,7 @@
                                                 <label for="">Leave type</label>
                                                 <div class="input-group">
                                                     <span class="input-group-addon"><i class="material-icons">time_to_leave</i></span>
-                                                    {!! Form::select('leave_type',leave_type_array(),null,['class'=>'form-control selectpicker', 'required'=>'true']) !!}
+                                                    {!! Form::select('leave_type',$leave_types,null,['class'=>'form-control selectpicker', 'required'=>'true']) !!}
                                                 </div>
 
                                                 <label for="">From Date</label>
@@ -42,7 +42,7 @@
                                                         <i class="material-icons">calendar_month</i>
                                                     </span>
                                                     <div class="form-line">
-                                                        {!! Form::text('from_date',null,['class'=>'form-control datepicker', 'placeholder'=>'From date..', 'required'=>'required']) !!}
+                                                        {!! Form::text('from_date',null,['class'=>'form-control datepicker', 'id'=>'from_date', 'placeholder'=>'From date..', 'required'=>'required']) !!}
                                                     </div>
                                                 </div>
 
@@ -52,29 +52,32 @@
                                                         <i class="material-icons">calendar_month</i>
                                                     </span>
                                                     <div class="form-line">
-                                                        {!! Form::text('to_date',null,['class'=>'form-control datepicker', 'placeholder'=>'To date..', 'required'=>'required']) !!}
+                                                        {!! Form::text('to_date',null,['class'=>'form-control datepicker', 'id'=>'to_date', 'placeholder'=>'To date..', 'required'=>'required']) !!}
                                                     </div>
                                                 </div>
 
-                                                <div class="row">
-                                                    <div class="col-xs-12">
-                                                        <input type="checkbox" name="is_half_day" v-model="isHalfDay" id="is_half_day" value="yes" class="filled-in chk-col-green" checked="">
-                                                        <label for="is_half_day">Half Day</label>
-                                                    </div>
-                                                </div>
 
-                                                <div class="row" v-if="isHalfDay">
-                                                    <div class="col-xs-4">
-                                                        <input type="radio" name="half_day_type" value="1st half" id="firstHalf" class="filled-in chk-col-green" required v-model="selectedHalfDayType">
-                                                        <label for="firstHalf">First Half</label>
+                                                <div id="half_day_container">
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <input type="checkbox" name="is_half_day" v-model="isHalfDay" id="is_half_day" value="yes" class="filled-in chk-col-green" checked="">
+                                                            <label for="is_half_day">Half Day</label>
+                                                        </div>
                                                     </div>
-                                                    <div class="col-xs-4">
-                                                        <input type="radio" name="half_day_type" value="2nd half" id="secondHalf" class="filled-in chk-col-green" required v-model="selectedHalfDayType">
-                                                        <label for="secondHalf">Second Half</label>
-                                                    </div>
-                                                    <div class="col-xs-4">
-                                                        <input type="radio" name="half_day_type" value="Others" id="others" class="filled-in chk-col-green" required v-model="selectedHalfDayType">
-                                                        <label for="others">Others</label>
+
+                                                    <div class="row" v-if="isHalfDay">
+                                                        <div class="col-xs-4">
+                                                            <input type="radio" name="half_day_type" value="1st half" id="firstHalf" class="filled-in chk-col-green" required v-model="selectedHalfDayType">
+                                                            <label for="firstHalf">First Half</label>
+                                                        </div>
+                                                        <div class="col-xs-4">
+                                                            <input type="radio" name="half_day_type" value="2nd half" id="secondHalf" class="filled-in chk-col-green" required v-model="selectedHalfDayType">
+                                                            <label for="secondHalf">Second Half</label>
+                                                        </div>
+                                                        <div class="col-xs-4">
+                                                            <input type="radio" name="half_day_type" value="Others" id="others" class="filled-in chk-col-green" required v-model="selectedHalfDayType">
+                                                            <label for="others">Others</label>
+                                                        </div>
                                                     </div>
                                                 </div>
 
@@ -191,14 +194,43 @@
 @endsection
 @section('custom_page_script')
     <script type="text/javascript">
+        //$('#half_day_container').hide();
+        function isOneDayDuration(from_date, to_date) {
+            const fromDate = new Date(from_date);
+            const toDate = new Date(to_date);
+            const durationInMilliseconds = toDate - fromDate;
+            const durationInDays = durationInMilliseconds / (24 * 60 * 60 * 1000);
+            console.log(durationInDays)
+            if(durationInDays == 0){
+                $('#half_day_container').show()
+            }else{
+                $('#half_day_container').hide();
+            }
 
+        }
         $(document).ready(function(){
+            var from_date = '{!! $leave->from_date !!}';
+            var to_date = '{!! $leave->to_date !!}';
+            isOneDayDuration(from_date, to_date);
             $('.datepicker').bootstrapMaterialDatePicker({
                 format: 'Y-MM-DD',
                 clearButton: true,
                 weekStart: 1,
                 time: false
             });
+
+            $('#from_date').change(function(){
+                var from_date = $(this).val();
+                var to_date = $('#to_date').val();
+                isOneDayDuration(from_date, to_date)
+            })
+
+            $('#to_date').change(function(){
+                var from_date = $('#from_date').val();
+                var to_date = $(this).val();
+                isOneDayDuration(from_date, to_date)
+            })
+
 
         })
 

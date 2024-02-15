@@ -1,6 +1,9 @@
 <?php
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 
 function generate_asset_url($path){
@@ -80,6 +83,13 @@ function menu_array(){
             'icon'=>'date_range',
             'link'=>url('/module/holiday')
         ],
+        [
+            'role_id' => 1,
+            'label'=>'Change Password',
+            'icon'=>'lock',
+            'link'=>url('/module/change_password')
+        ],
+
 
         /**=======EXECUTIVE MENU========**/
         [
@@ -98,6 +108,12 @@ function menu_array(){
                 ],
             ],
         ],
+        [
+            'role_id' => 2,
+            'label'=>'Change Password',
+            'icon'=>'lock',
+            'link'=>url('/module/change_password')
+        ],
 
 
         /**=======TEAM LEADER MENU========**/
@@ -106,6 +122,12 @@ function menu_array(){
             'label'=>'Leave Management',
             'icon'=>'assignment_turned_in',
             'link'=>url('module/leave'),
+        ],
+        [
+            'role_id' => 3,
+            'label'=>'Change Password',
+            'icon'=>'lock',
+            'link'=>url('/module/change_password')
         ],
 
     ];
@@ -133,7 +155,10 @@ function department_list(){
         'Member Relation' => 'Member Relation',
         'Operations' => 'Operations',
         'Product Development & QA' => 'Product Development & QA',
-        'Management' => 'Management'
+        'Management' => 'Management',
+        'HR & Culture' => 'HR & Culture',
+        'Telesales' => 'Telesales',
+        'Outstation' => 'Outstation'
     ];
 }
 function designation_list(){
@@ -159,5 +184,26 @@ function get_month_list(){
         $month[$name] = $name;
     }
     return $month;
+}
+function get_year_list(){
+    $month_list =  range(Carbon::now()->year, 2023);
+    $months  = [];
+    foreach ($month_list as $item){
+        $months[$item] = $item;
+    }
+    return $months;
+}
+
+function sendMail($recipientEmail, $subject, $htmlPart) {
+    //return $htmlPart;
+    $endpoint = 'https://hr.bikroytech.com/mailer_api/index.php';
+    $response = Http::asForm()->post($endpoint, [
+        'on_create_leave_application' => true,
+        'to' => $recipientEmail,
+        'subject' => $subject,
+        'html_part' => $htmlPart
+    ]);
+    Log::info($response->json());
+    return $response->json(); // Return the JSON response
 }
 

@@ -5,6 +5,7 @@ namespace App\Models;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Log;
 
 class Employee extends Model
 {
@@ -26,7 +27,8 @@ class Employee extends Model
         'payment_mode',
         'vendor_code',
         'designation',
-        'department'
+        'department',
+        'earned_leave_adjustment'
     ];
 
     public function user()
@@ -87,6 +89,7 @@ class Employee extends Model
 
     public function getRemainingLeaveForCurrentYear()
     {
+        //Log::info('Earnedleave adjustment: '. $this->earned_leave_adjustment);
         $leave_details = [];
         $earned_leave_balance = 16;
         $sick_leave_balance = 14;
@@ -102,6 +105,7 @@ class Employee extends Model
         $earned_leave_per_day = 0.043;
         if ($joiningDate->diffInMonths($currentDate) > 12) {
             $opening_earned_leave = ($earned_leave_per_day * $joiningDate->diffInDays($currentDate)) + $earned_leave_balance;
+            $opening_earned_leave -= $this->earned_leave_adjustment;
             $applied_earned_leave = $this->earned_leave()->sum('duration');
             $leave_details['earned_leave']['opening'] = round($opening_earned_leave, 1);
             $leave_details['earned_leave']['applied'] = $applied_earned_leave;

@@ -14,8 +14,8 @@ class HolidayCalendarController extends Controller
     }
     public function index(){
         $year = isset(request()->year) ? request()->year : Carbon::now()->year;
-        $results = HolidayCalendar::orderBy('id','desc')->whereYear('holiday_date', $year)->paginate(20);
-
+        $results = HolidayCalendar::orderBy('holiday_date','desc')->whereYear('holiday_date', $year)->paginate(20);
+        //return $results;
         return view('admin.modules.holiday.index', compact('results'));
     }
     public function create()
@@ -24,8 +24,7 @@ class HolidayCalendarController extends Controller
     }
     public function store(Request $request)
     {
-        // Validate and store the new holiday record
-        //return $request->all();
+
         HolidayCalendar::create($request->all());
 
         return redirect()->route('holiday.index')->with('message', 'Holiday created successfully!');
@@ -39,8 +38,6 @@ class HolidayCalendarController extends Controller
 
     public function update(Request $request, $id)
     {
-        // Validate and update the holiday record
-        //return $request->all();
         $holiday = HolidayCalendar::findOrFail($id);
         $holiday->update($request->all());
 

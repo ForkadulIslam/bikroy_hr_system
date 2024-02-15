@@ -48,7 +48,7 @@
                                     <td>{!! ($i+1) !!}</td>
                                     <td>{!! $result->user->name !!}</td>
                                     <td>{!! $result->leave_type !!}</td>
-                                    <td>{!! $result->reson !!}</td>
+                                    <td>{!! $result->reason !!}</td>
                                     <td>{!! $result->from_date !!}</td>
                                     <td>{!! $result->to_date !!}</td>
                                     <td>{!! $result->duration !!}</td>

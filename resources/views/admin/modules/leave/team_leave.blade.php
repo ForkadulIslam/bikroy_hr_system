@@ -41,7 +41,7 @@
                                     <td>{!! $result->user->name !!}</td>
                                     <td>{!! $result->user->employee->department !!}</td>
                                     <td>{!! $result->leave_type !!}</td>
-                                    <td>{!! $result->reson !!}</td>
+                                    <td>{!! $result->reason !!}</td>
                                     <td>{!! $result->from_date !!}</td>
                                     <td>{!! $result->to_date !!}</td>
                                     <td>{!! $result->duration !!}</td>

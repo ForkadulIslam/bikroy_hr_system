@@ -17,6 +17,7 @@ class AttendanceController extends Controller
         $this->middleware('RedirectIfNotAuthenticate');
     }
     public function index(){
+
         if(auth()->user()->role_id != 1) return abort(404);
         $department = request()->department ? request()->department : 'Business Development';
         $month = request()->month ? request()->month : Carbon::now()->monthName;
@@ -81,7 +82,7 @@ class AttendanceController extends Controller
             $absent_days = [];
             foreach($office_days as $day){
                 if(!in_array($day, $list_of_approved_leave_days) & !in_array($day, $attend_days)){
-                   $absent_days[] = $day;
+                    $absent_days[] = $day;
                 }
             }
             $item->absent_days = $absent_days;

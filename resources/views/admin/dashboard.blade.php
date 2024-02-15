@@ -8,6 +8,13 @@
 @endsection
 @section('content')
     <div class="container-fluid" id="app">
+        <div class="block-header">
+            @if(session('message'))
+                <div class="alert alert-success">
+                    {{ session('message') }}
+                </div>
+            @endif
+        </div>
         <div class="row clearfix">
             <div class="col-xs-12">
                 <div class="card">
@@ -62,7 +69,7 @@
                                                 <td>{!! $result->user->name !!}</td>
                                                 <td>{!! $result->user->employee->department !!}</td>
                                                 <td>{!! $result->leave_type !!}</td>
-                                                <td>{!! $result->reson !!}</td>
+                                                <td>{!! $result->reason !!}</td>
                                                 <td>{!! $result->from_date !!}</td>
                                                 <td>{!! $result->to_date !!}</td>
                                                 <td>{!! $result->duration !!}</td>
@@ -131,7 +138,7 @@
                                                     <td>{!! $result->user->name !!}</td>
                                                     <td>{!! $result->user->employee->department !!}</td>
                                                     <td>{!! $result->leave_type !!}</td>
-                                                    <td>{!! $result->reson !!}</td>
+                                                    <td>{!! $result->reason !!}</td>
                                                     <td>{!! $result->from_date !!}</td>
                                                     <td>{!! $result->to_date !!}</td>
                                                     <td>{!! $result->duration !!}</td>
