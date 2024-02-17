@@ -67,13 +67,13 @@ class LeaveController extends Controller
         $team_leader_id = $team_leader ? $team_leader->user_id : null;
         $email_to = null;
         if($team_leader_id == auth()->user()->id){
-            $email_to = 'ceo@bikroy.com';
+            $email_to = 'eshita@bikroy.com';
         }else{
             $email_to = User::find($team_leader_id)->email;
         }
 
         if(auth()->user()->employee->designation == "CEO"){
-            $email_to = 'ceo@bikroy.com';
+            $email_to = 'eshita@bikroy.com';
             $inputs['status'] = 'Approved';
         }
         //return $email_to;
