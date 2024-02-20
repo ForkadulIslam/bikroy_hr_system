@@ -79,7 +79,7 @@ class LeaveController extends Controller
         //return $email_to;
         $leave_balance = Employee::where('user_id', auth()->user()->id)->first()->getRemainingLeaveForCurrentYear();
         $message = 'Application successfully submitted!!!';
-
+        //return $leave_balance;
         if($request->leave_type == 'Casual Leave'){
             if( $inputs['duration'] <= $leave_balance['casual_leave']['balance']){
                 LeaveApplication::create($inputs);
@@ -143,6 +143,12 @@ class LeaveController extends Controller
                 $message = 'The application duration exceeds your leave balance';
             }
         }
+        if($request->leave_type == 'Non Paid Leave' || $request->leave_type == 'Work From Home'){
+            LeaveApplication::create($inputs);
+            $this->email_notification_of_leave_application($request->leave_type, $email_to, $inputs['from_date'], $inputs['to_date']);
+            return redirect()->to('module/leave')->with('message','Application submitted');
+        }
+        return $request->leave_type;
 
         return redirect()->to('module/leave')->with('message',$message);
     }
